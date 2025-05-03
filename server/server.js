@@ -1,6 +1,7 @@
 import express from 'express';
 import { SERVER } from './config/constants.js';
 import authRouter from './routes/auth.route.js';
+import { ConnectDB } from './config/db.config.js';
 
 const app = express();
 
@@ -13,4 +14,5 @@ app.use('/api/auth/', authRouter)
 
 app.listen(SERVER.PORT, SERVER.HOST, () => {
     console.log(`Server running on ${SERVER.SERVER}`);
-})
+    ConnectDB();
+});
