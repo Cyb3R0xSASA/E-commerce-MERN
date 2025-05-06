@@ -6,9 +6,24 @@ const SERVER = {
     SERVER: process.env.SERVER,
 };
 
-const DATABASE_URI = process.env.DATABASE_URI;
+const DB = {
+    DATABASE_URI: process.env.DATABASE_URI,
+    REDIS_URL: process.env.REDIS_URL
+};
+
+const JWT = {
+    JWT_REFRESH_KEY: process.env.JWT_REFRESH_KEY,
+    JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+};
+
+const HTTP_STATUS = {
+    SUCCESS: 'success',
+    FAIL: 'fail',
+};
 
 export {
     SERVER,
-    DATABASE_URI
-}
+    DB,
+    JWT,
+    HTTP_STATUS,
+};
