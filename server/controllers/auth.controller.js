@@ -2,7 +2,7 @@ import { compareSync, hashSync } from "bcrypt";
 import { HTTP_STATUS } from "../config/constants.js";
 import { redis } from "../config/redis.config.js";
 import { methodErrorHandler } from "../middlewares/errors/method.error.js";
-import { UserLoginValidationSchema, UserSignupValidationSchema, UserVerifyOTPSchema } from "../middlewares/validation/user.validation.js";
+import { UserLoginValidationSchema, UserResendOtpSchema, UserSignupValidationSchema, UserVerifyOTPSchema } from "../middlewares/validation/user.validation.js";
 import { User } from "../models/user.model.js";
 import { errorMessage } from "../utils/error.js";
 import { generateJWT, setCookies, storeJWT, verifyJWT } from "../utils/jwt.js";
@@ -33,26 +33,39 @@ const verifyAccount = methodErrorHandler(
 
         if (error || !req.body) return err();
         const { userId } = verifyJWT.access(req.cookies.accessToken)
-        console.log(userId)
         const hashedOtp = await redis.get(`otp_key:${userId}`);
-        if (!hashedOtp)
-            return err();
 
-        if (!compareSync(otp, hashedOtp))
-            return err();
+        if (!hashedOtp) return err();
+        if (!compareSync(otp, hashedOtp)) return err();
 
         const user = await User.findById(userId)
-        user.isActive = true;
+        user.isActivate = true;
         await user.save();
         await redis.del(`otp_key:${userId}`);
         await redis.del(`otp_limit:${userId}`);
 
-        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: { message: 'Verified successfully'} })
+        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: { message: 'Verified successfully' } })
     }
 );
 
-const resendOtp = async (req, res) => {
-};
+const resendOtp = methodErrorHandler(
+    async (req, res, next) => {
+        const { error, value: { email } } = UserResendOtpSchema.validate(req.body)
+        const err = () => next(errorMessage.create(HTTP_STATUS.FAIL, 400, { message: 'Resend otp failed. Please try again.' }));
+
+        if (error || !req.body) return err();
+        const user = await User.findOne({ email });
+        if (!user || user.isActive === true) return err();
+
+        await otpGenerator(user, next);
+        const { access, refresh } = generateJWT(user.id);
+
+        await storeJWT(user.id, refresh);
+        setCookies(res, access, refresh);
+
+        res.status(200).json({status: HTTP_STATUS.SUCCESS, data: null});
+    }
+)
 
 const signin = methodErrorHandler(
     async (req, res, next) => {

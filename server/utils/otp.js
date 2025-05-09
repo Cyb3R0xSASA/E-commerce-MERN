@@ -19,10 +19,14 @@ export const otpGenerator = async (user, next, otpType = 'verify') => {
     const limitKey = `otp_limit:${user.id}`;
     const otpKey = `otp_key:${user.id}`;
     const attempts = await redis.get(limitKey);
+    const coolDownKey = `otp_cooldown:${user.id}`;
     const subject = otpType === 'verify' ? 'Verify Your Email Address' : 'Reset Your Password';
+    const err = () => next(errorMessage.create(HTTP_STATUS.FAIL, 429, { message: 'You reached for max requests of OTP for today' }));
 
-    if (attempts && Number(attempts) >= OTP_CONF.MAX_OTP_PER_DAY)
-        return next(errorMessage.create(HTTP_STATUS.FAIL, 429, { message: 'You reached for max requests of OTP for today' }));
+    if (await redis.exists(coolDownKey))
+        return next(errorMessage.create(HTTP_STATUS.FAIL, 429, { message: `Please wait ${await redis.ttl(coolDownKey)} seconds before requesting a new OTP.` }));
+
+    if (attempts && Number(attempts) >= OTP_CONF.MAX_OTP_PER_DAY) return err();
 
     const otp = randomOTPGenerator();
     await redis.set(otpKey, hashSync(otp, genSaltSync(10)), 'EX', OTP_CONF.OTP_TTL_SECONDS);
@@ -56,5 +60,6 @@ export const otpGenerator = async (user, next, otpType = 'verify') => {
         ],
     };
 
-    await transporter.sendMail(mailOptions)
+    await transporter.sendMail(mailOptions);
+    await redis.set(coolDownKey, '1', 'EX', 60);
 }
