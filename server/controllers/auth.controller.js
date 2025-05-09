@@ -63,18 +63,31 @@ const resendOtp = methodErrorHandler(
         await storeJWT(user.id, refresh);
         setCookies(res, access, refresh);
 
-        res.status(200).json({status: HTTP_STATUS.SUCCESS, data: null});
+        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: null });
     }
 )
 
 const signin = methodErrorHandler(
     async (req, res, next) => {
         const { error, value } = UserLoginValidationSchema.validate(req.body);
-        const err = () => next(errorMessage.create(HTTP_STATUS.FAIL, 400, { message: 'Login failed. Please try again.' }));
+        const err = () => next(errorMessage.create(HTTP_STATUS.FAIL, 400, { message: 'Password or email not correct' }));
+        console.log(value)
 
         if (error || !req.body) return err();
-        const user = await User.find({ email: value });
+        const user = await User.findOne({ email: value.email });
+        if (!user || user.isActivate === false)
+            return err();
 
+        const isMatch = await user.comparePassword(value.password);
+        if (!isMatch) return err();
+
+        const { access, refresh } = generateJWT(user.id)
+        await storeJWT(user.id, refresh);
+        setCookies(res, access, refresh);
+        return res.json({ status: HTTP_STATUS.SUCCESS, data: {
+            name: user.name,
+            role: user.role,
+        }});
     }
 );
 
