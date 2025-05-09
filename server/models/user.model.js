@@ -36,10 +36,9 @@ const userSchema = new Schema({
         enum: ['customer', 'admin'],
         default: 'customer',
     }
-},
-    {
-        timestamps: true
-    });
+}, {
+    timestamps: true
+});
 
 userSchema.pre('save', function (next) {
     if (!this.isModified('password')) return next();

@@ -25,10 +25,8 @@ export const otpGenerator = async (user, next, otpType = 'verify') => {
         return next(errorMessage.create(HTTP_STATUS.FAIL, 429, { message: 'You reached for max requests of OTP for today' }));
 
     const otp = randomOTPGenerator();
-    console.log(otp)
     await redis.set(otpKey, hashSync(otp, genSaltSync(10)), 'EX', OTP_CONF.OTP_TTL_SECONDS);
     await redis.incr(limitKey);
-    console.log('first');
     if (!attempts)
         await redis.expire(limitKey, OTP_CONF.OTP_LIMIT_TTL);
 

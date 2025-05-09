@@ -21,7 +21,7 @@ const UserSignupValidationSchema = Joi.object({
 
 const UserLoginValidationSchema = Joi.object({
     ...email,
-    password: Joi.string().min(8).max(128).required(),
+    password: Joi.string().min(8).max(256).required(),
 });
 
 const UserVerifyOTPSchema = Joi.object({ ...otp });

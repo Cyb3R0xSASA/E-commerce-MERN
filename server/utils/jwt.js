@@ -1,12 +1,17 @@
 import { JWT, NODE_ENV } from "../config/constants.js";
 import { redis } from "../config/redis.config.js";
-import  pkg from "jsonwebtoken";
-const {verify, sign} = pkg
+import pkg from "jsonwebtoken";
+const { verify, sign } = pkg
 
 const generateJWT = (userId) => {
     const access = sign({ userId }, JWT.JWT_SECRET_KEY, { expiresIn: '15m' });
     const refresh = sign({ userId }, JWT.JWT_REFRESH_KEY, { expiresIn: '15d' });
     return { access, refresh };
+};
+
+const verifyJWT = {
+    access: (token) => verify(token, JWT.JWT_SECRET_KEY),
+    refresh: (token) => verify(token, JWT.JWT_REFRESH_KEY),
 };
 
 const storeJWT = async (userId, refreshToken) => {
@@ -31,6 +36,7 @@ const setCookies = (res, accessToken, refreshToken) => {
 
 export {
     generateJWT,
+    verifyJWT,
     storeJWT,
     setCookies,
 }
