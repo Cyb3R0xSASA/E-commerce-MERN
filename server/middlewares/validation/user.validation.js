@@ -1,9 +1,8 @@
 import Joi from 'joi';
 
 const password = {
-    pass1: Joi.string().min(8).max(256)
-        .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])')).required(),
-    pass2: Joi.string().valid(Joi.ref('pass1')).required(),
+    password: Joi.string().min(8).max(256)
+        .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])')).required()
 };
 
 const email = {

@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from "../config/constants";
+import { HTTP_STATUS } from "../config/constants.js";
 
 class ErrorMessage extends Error {
     constructor() {

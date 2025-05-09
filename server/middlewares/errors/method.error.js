@@ -1,7 +1,7 @@
 const errorResponse = (error, _, res, __) => {
-    return res.status(error.statusCode)
+    return res.status(error.statusCode || 400)
         .json({
-            status: error.statusCode,
+            status: error.statusText,
             data: error.data,
             message: error.message,
         });

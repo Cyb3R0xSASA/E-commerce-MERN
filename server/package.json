@@ -16,12 +16,14 @@
     "cloudinary": "^2.6.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.5.0",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
     "ioredis": "^5.6.1",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
     "morgan": "^1.10.0",
+    "nodemailer": "^7.0.2",
     "stripe": "^18.1.0"
   },
   "devDependencies": {

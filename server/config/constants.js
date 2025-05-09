@@ -21,9 +21,27 @@ const HTTP_STATUS = {
     FAIL: 'fail',
 };
 
+const SMTP = {
+    HOST: process.env.SMTP_HOST,
+    PORT: process.env.SMTP_PORT,
+    USER: process.env.SMTP_USER,
+    PASSWORD: process.env.SMTP_PASSWORD,
+};
+
+const OTP_CONF = {
+    MAX_OTP_PER_DAY: 5,
+    OTP_TTL_SECONDS: 300,
+    OTP_LIMIT_TTL: 86400,
+};
+
+const NODE_ENV = process.env.NODE_ENV;
+
 export {
     SERVER,
     DB,
     JWT,
     HTTP_STATUS,
+    SMTP,
+    OTP_CONF,
+    NODE_ENV,
 };
