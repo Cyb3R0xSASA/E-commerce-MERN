@@ -11,4 +11,7 @@ router.route('/')
     .get(protectRoute, adminRoute, Products.products)
     .post(protectRoute, adminRoute, upload.single('image'), Products.create)
 
+router.route('/:id')
+    .get(Products.product)
+
 export default router;
