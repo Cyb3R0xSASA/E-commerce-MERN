@@ -34,6 +34,12 @@ const OTP_CONF = {
     OTP_LIMIT_TTL: 86400,
 };
 
+const CLOUDINARY = {
+    NAME: process.env.CLOUDINARY_NAME,
+    API_KEY: process.env.CLOUDINARY_API_KEY,
+    API_SECRET: process.env.CLOUDINARY_API_SECRET,
+}
+
 const NODE_ENV = process.env.NODE_ENV;
 
 export {
@@ -43,5 +49,6 @@ export {
     HTTP_STATUS,
     SMTP,
     OTP_CONF,
+    CLOUDINARY,
     NODE_ENV,
 };

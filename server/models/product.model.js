@@ -10,7 +10,7 @@ const productSchema = Schema({
         type: String,
         required: true,
         minLength: 50,
-        maxLength: 1000,
+        maxLength: 1500,
     },
     price: {
         type: Number,

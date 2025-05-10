@@ -1,8 +1,14 @@
 import { Router } from 'express';
 import { adminRoute, protectRoute } from '../middlewares/auth.middleware.js';
-import { products } from '../controllers/product.controller.js';
+import Products from '../controllers/product.controller.js';
 const router = Router();
+import multer from 'multer';
 
-router.get('/', protectRoute, adminRoute, products)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+router.route('/')
+    .get(protectRoute, adminRoute, Products.products)
+    .post(protectRoute, adminRoute, upload.single('image'), Products.create)
 
 export default router;
