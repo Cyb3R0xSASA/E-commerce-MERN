@@ -146,7 +146,7 @@ const createAccessToken = methodErrorHandler(
         const { access } = generateJWT(userId);
         setCookies(res, access);
 
-        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: access });
+        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: { access } });
     }
 );
 

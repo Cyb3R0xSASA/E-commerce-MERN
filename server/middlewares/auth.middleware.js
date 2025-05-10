@@ -5,7 +5,7 @@ import { verifyJWT } from "../utils/jwt.js";
 import { methodErrorHandler } from "./errors/method.error.js";
 
 const protectRoute = methodErrorHandler(
-    async (req, res, next) => {
+    async (req, _, next) => {
         const accessToken = req.cookies.accessToken;
         if (!accessToken)
             return next(errorMessage.create(HTTP_STATUS.FAIL, 401, 'Unauthorized - No access token provided'));
@@ -21,7 +21,7 @@ const protectRoute = methodErrorHandler(
 );
 
 const adminRoute = methodErrorHandler(
-    async (req, res, next) => {
+    async (req, _, next) => {
         if (!req.user || req.user.role !== 'admin') 
             return next(errorMessage.create(HTTP_STATUS.FAIL, 401, 'Unauthorized - Admin only'));
 
