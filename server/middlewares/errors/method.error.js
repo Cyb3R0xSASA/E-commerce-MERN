@@ -4,6 +4,7 @@ const errorResponse = (error, _, res, __) => {
             status: error.statusText,
             data: error.data,
             message: error.message,
+            status_code: error.statusCode,
         });
 };
 

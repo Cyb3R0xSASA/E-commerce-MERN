@@ -10,15 +10,15 @@ import {
     logout,
 } from '../controllers/auth.controller.js';
 
-const authRouter = Router();
+const router = Router();
 
-authRouter.post('/signup', signup);
-authRouter.post('/verify-account', verifyAccount);
-authRouter.post('/resend-otp', resendOtp);
-authRouter.post('/signin', signin);
-authRouter.post('/forget-password', forgetPassword);
-authRouter.post('/reset-password', resetPassword);
-authRouter.post('/refresh-token', createAccessToken);
-authRouter.post('/logout', logout);
+router.post('/signup', signup);
+router.post('/verify-account', verifyAccount);
+router.post('/resend-otp', resendOtp);
+router.post('/signin', signin);
+router.post('/forget-password', forgetPassword);
+router.post('/reset-password', resetPassword);
+router.post('/refresh-token', createAccessToken);
+router.post('/logout', logout);
 
-export default authRouter;
+export default router;

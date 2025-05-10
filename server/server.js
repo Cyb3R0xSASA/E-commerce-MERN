@@ -1,6 +1,7 @@
 import express, { json } from 'express';
 import { SERVER } from './config/constants.js';
 import authRouter from './routes/auth.route.js';
+import productRouter from './routes/product.route.js';
 import { ConnectDB } from './config/db.config.js';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
@@ -13,6 +14,7 @@ app.use(json());
 app.use(cookieParser());
 
 app.use('/api/auth/', authRouter);
+app.use('/api/product', productRouter);
 app.use(errorResponse);
 app.use(routesErrorHandler);
 
