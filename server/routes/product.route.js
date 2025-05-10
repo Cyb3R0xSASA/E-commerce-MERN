@@ -13,5 +13,6 @@ router.route('/')
 
 router.route('/:id')
     .get(Products.product)
+    .post(protectRoute, adminRoute, Products.del)
 
 export default router;

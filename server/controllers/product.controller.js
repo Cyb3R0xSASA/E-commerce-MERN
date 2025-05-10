@@ -5,6 +5,7 @@ import { ProductCreateValidationSchema } from "../middlewares/validation/product
 import { Product } from '../models/product.model.js';
 import { imageCheck } from "../services/imageCheker.js";
 import { errorMessage, errorMessageFormat } from "../utils/error.js";
+import { cloudinary } from "../config/cloudinary.js";
 
 const products = methodErrorHandler(
     async (req, res, next) => {
@@ -20,6 +21,9 @@ const product = methodErrorHandler(
             return next(errorMessage.create(HTTP_STATUS.FAIL, 400, null, 'Invalid product id'))
 
         const product = await Product.findOne({ _id: id }).lean().select('-_id -isFeatured -createdAt -updatedAt -__v')
+        if (!product)
+            return next(errorMessage.create(HTTP_STATUS.FAIL, 400, null, 'Product not exist.'));
+
         res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: { ...product } })
     }
 );
@@ -47,7 +51,23 @@ const create = methodErrorHandler(
 
 const del = methodErrorHandler(
     async (req, res, next) => {
+        const id = req.params.id;
+        if (!Types.ObjectId.isValid(id))
+            return next(errorMessage.create(HTTP_STATUS.FAIL, 404, null, 'Invalid product id'))
 
+        const product = await Product.findOne({ _id: id }).lean();
+        if (!product)
+            return next(errorMessage.create(HTTP_STATUS.FAIL, 404, null, 'Product not exist.'));
+
+        if (!product.image) {
+            return next(errorMessage.create(HTTP_STATUS.FAIL, 404, null, 'Product not exist.'));
+        };
+
+        const publicId = product.image.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(`products/${publicId}`);
+        await Product.findOneAndDelete({_id: product._id});
+
+        res.status(200).json({status: HTTP_STATUS.SUCCESS, data: null, message: 'Product deleted successfully.'})
     }
 );
 
