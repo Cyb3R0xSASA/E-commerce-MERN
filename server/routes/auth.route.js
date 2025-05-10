@@ -6,7 +6,6 @@ import {
     signin,
     forgetPassword,
     resetPassword,
-    changePassword,
     createAccessToken,
     logout,
 } from '../controllers/auth.controller.js';
@@ -19,8 +18,7 @@ authRouter.post('/resend-otp', resendOtp);
 authRouter.post('/signin', signin);
 authRouter.post('/forget-password', forgetPassword);
 authRouter.post('/reset-password', resetPassword);
-authRouter.post('/change-password', changePassword);
-authRouter.post('/create-access-token', createAccessToken);
+authRouter.post('/refresh-token', createAccessToken);
 authRouter.post('/logout', logout);
 
 export default authRouter;

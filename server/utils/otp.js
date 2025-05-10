@@ -15,7 +15,7 @@ const randomOTPGenerator = (length = 6) => {
     return otp;
 };
 
-export const otpGenerator = async (user, next, otpType = 'verify') => {
+const otpGenerator = async (user, next, otpType = 'verify') => {
     const limitKey = `otp_limit:${user.id}`;
     const otpKey = `otp_key:${user.id}`;
     const attempts = await redis.get(limitKey);
@@ -62,4 +62,15 @@ export const otpGenerator = async (user, next, otpType = 'verify') => {
 
     await transporter.sendMail(mailOptions);
     await redis.set(coolDownKey, '1', 'EX', 60);
+};
+
+const deleteOtp = async () => {
+    await redis.del(`otp_key:${userId}`);
+    await redis.del(`otp_limit:${userId}`);
+    await redis.del(`otp_cooldown:${user.id}`);
+};
+
+export {
+    deleteOtp,
+    otpGenerator
 }

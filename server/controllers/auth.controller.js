@@ -6,7 +6,7 @@ import { UserLoginValidationSchema, UserResendOtpSchema, UserResetPasswordValida
 import { User } from "../models/user.model.js";
 import { errorMessage } from "../utils/error.js";
 import { generateJWT, setCookies, storeJWT, verifyJWT } from "../utils/jwt.js";
-import { otpGenerator } from "../utils/otp.js";
+import { deleteOtp, otpGenerator } from "../utils/otp.js";
 
 const signup = methodErrorHandler(
     async (req, res, next) => {
@@ -22,7 +22,7 @@ const signup = methodErrorHandler(
         const { access, refresh } = generateJWT(user.id);
         await storeJWT(user.id, refresh);
         setCookies(res, access, refresh);
-        res.status(201).json({ status: HTTP_STATUS.SUCCESS, data: { name: user.name, email: user.email, role: user.role }, message: "User created successfully" });
+        res.status(201).json({ status: HTTP_STATUS.SUCCESS, data: { name: user.name, email: user.email, role: user.role }, tokens: { accessToken: access, refreshToken: refresh }, message: "User created successfully" });
     }
 );
 
@@ -41,8 +41,7 @@ const verifyAccount = methodErrorHandler(
         const user = await User.findById(userId);
         user.isActivate = true;
         await user.save();
-        await redis.del(`otp_key:${userId}`);
-        await redis.del(`otp_limit:${userId}`);
+        await deleteOtp();
 
         res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: { message: 'Verified successfully' } })
     }
@@ -63,7 +62,7 @@ const resendOtp = methodErrorHandler(
         await storeJWT(user.id, refresh);
         setCookies(res, access, refresh);
 
-        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: null });
+        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: { accessToken: access, refreshToken: refresh } });
     }
 )
 
@@ -83,10 +82,9 @@ const signin = methodErrorHandler(
         await storeJWT(user.id, refresh);
         setCookies(res, access, refresh);
         return res.status(200).json({
-            status: HTTP_STATUS.SUCCESS, data: {
-                name: user.name,
-                role: user.role,
-            }
+            status: HTTP_STATUS.SUCCESS,
+            data: { name: user.name, role: user.role, },
+            tokens: { accessToken: access, refreshToken: refresh }
         });
     }
 );
@@ -104,7 +102,7 @@ const forgetPassword = methodErrorHandler(
         const { access, refresh } = generateJWT(user.id);
         await storeJWT(user.id, refresh);
         setCookies(res, access, refresh);
-        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: null });
+        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: { accessToken: access, refreshToken: refresh } });
     }
 );
 
@@ -126,16 +124,31 @@ const resetPassword = methodErrorHandler(
 
         user.password = value.password;
         await user.save();
+        await deleteOtp();
 
         res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: null })
     }
 );
 
-const changePassword = async (req, res) => {
-};
+const createAccessToken = methodErrorHandler(
+    async (req, res, next) => {
+        const err = () => next(errorMessage.create(HTTP_STATUS.FAIL, 401, null, 'No refresh token provided.'));
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken)
+            return err();
 
-const createAccessToken = async (req, res) => {
-};
+        const { userId } = verifyJWT.refresh(refreshToken);
+        const storedToken = await redis.get(`refresh_token:${userId}`);
+
+        if (refreshToken !== storedToken)
+            return err();
+
+        const { access } = generateJWT(userId);
+        setCookies(res, access);
+
+        res.status(200).json({ status: HTTP_STATUS.SUCCESS, data: access });
+    }
+);
 
 const logout = methodErrorHandler(
     async (req, res, next) => {
@@ -157,17 +170,15 @@ export {
     signin,
     forgetPassword,
     resetPassword,
-    changePassword,
     createAccessToken,
     logout,
 }
 
-// TODO: signup
-// TODO: verifyAccount
-// TODO: resendOtp
-// TODO: signin
-// TODO: forgetPassword
-// TODO: resetPassword
-// TODO: changePassword
-// TODO: createAccessToken
-// TODO: logout
+// TODO: signup ✅
+// TODO: verifyAccount ✅
+// TODO: resendOtp ✅
+// TODO: signin ✅
+// TODO: forgetPassword ✅
+// TODO: resetPassword ✅
+// TODO: createAccessToken 
+// TODO: logout ✅

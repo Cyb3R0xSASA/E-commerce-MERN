@@ -18,20 +18,22 @@ const storeJWT = async (userId, refreshToken) => {
     await redis.set(`refresh_token:${userId}`, refreshToken, 'EX', 15 * 24 * 60 * 60);
 };
 
-const setCookies = (res, accessToken, refreshToken) => {
-    res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-        secure: NODE_ENV === 'pro',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000,
-    });
+const setCookies = (res, accessToken = null, refreshToken = null) => {
+    if (accessToken)
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: NODE_ENV === 'pro',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000,
+        });
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: NODE_ENV === 'pro',
-        sameSite: 'strict',
-        maxAge: 15 * 24 * 60 * 60 * 1000,
-    });
+    if (refreshToken)
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: NODE_ENV === 'pro',
+            sameSite: 'strict',
+            maxAge: 15 * 24 * 60 * 60 * 1000,
+        });
 };
 
 export {
