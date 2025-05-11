@@ -5,12 +5,13 @@ const productSchema = Schema({
     name: {
         type: String,
         required: true,
+        unique: true,
     },
     description: {
         type: String,
         required: true,
-        minLength: 50,
-        maxLength: 1500,
+        minlength: 50,
+        maxlength: 1500,
     },
     price: {
         type: Number,
@@ -23,7 +24,8 @@ const productSchema = Schema({
         required: true,
     },
     category: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Category',
         required: true,
     },
     isFeatured: {
@@ -32,4 +34,21 @@ const productSchema = Schema({
     },
 }, { timestamps: true });
 
+const categorySchema = Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        minlength: 2,
+        maxlength: 100
+    },
+    description: {
+        type: String,
+        trim: true,
+        maxlength: 500
+    }
+}, { timestamps: true });
+
 export const Product = models.Product || new model('Product', productSchema);
+export const Category = models.Category || new model('Category', categorySchema);
