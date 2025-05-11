@@ -72,7 +72,7 @@ const signin = methodErrorHandler(
         const err = () => next(errorMessage.create(HTTP_STATUS.FAIL, 400, { message: 'Password or email not correct' }));
 
         if (error || !req.body) return err();
-        const user = await User.findOne({ email: value.email });
+        let user = await User.findOne({ email: value.email });
         if (!user || user.isActivate === false) return err();
 
         const isMatch = await user.comparePassword(value.password);
@@ -81,9 +81,10 @@ const signin = methodErrorHandler(
         const { access, refresh } = generateJWT(user.id)
         await storeJWT(user.id, refresh);
         setCookies(res, access, refresh);
+        user = await User.findOne({ email: value.email }).select('-isActivate -createdAt -updatedAt -__v');
         return res.status(200).json({
             status: HTTP_STATUS.SUCCESS,
-            data: { name: user.name, role: user.role, },
+            data: { ...user._doc},
             tokens: { accessToken: access, refreshToken: refresh }
         });
     }

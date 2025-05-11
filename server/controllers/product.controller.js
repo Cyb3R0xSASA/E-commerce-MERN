@@ -8,7 +8,7 @@ import { errorMessage, errorMessageFormat } from "../utils/error.js";
 import { cloudinary } from "../config/cloudinary.js";
 import { redis } from "../config/redis.config.js";
 
-const checkId = (id, next) => {
+export const checkId = (id, next) => {
     if (!Types.ObjectId.isValid(id))
         return next(errorMessage.create(HTTP_STATUS.FAIL, 404, null, 'Endpoint not exist'))
 };

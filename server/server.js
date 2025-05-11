@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { routesErrorHandler } from './middlewares/errors/route.error.js';
 import { errorResponse } from './middlewares/errors/method.error.js';
+import cartRouter from './routes/cart.route.js';
 
 const app = express();
 app.use(morgan('dev'));
@@ -15,6 +16,7 @@ app.use(cookieParser());
 
 app.use('/api/auth/', authRouter);
 app.use('/api/product', productRouter);
+app.use('/api/cart', cartRouter)
 app.use(errorResponse);
 app.use(routesErrorHandler);
 
