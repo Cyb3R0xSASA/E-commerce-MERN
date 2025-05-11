@@ -12,6 +12,7 @@ router.route('/')
     .post(protectRoute, adminRoute, upload.single('image'), Products.create);
 
 router.get('/featured', Products.featured);
+router.patch('/featured/:id', protectRoute, adminRoute, Products.toggleFeatured);
 
 router.route('/categories')
     .get(Products.categories)
@@ -21,7 +22,7 @@ router.get('/categories/:id', Products.category)
 
 router.route('/:id')
     .get(Products.product)
-    .post(protectRoute, adminRoute, Products.del);
+    .delete(protectRoute, adminRoute, Products.del);
 
 
 export default router;
