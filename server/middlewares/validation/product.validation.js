@@ -14,13 +14,9 @@ const CategoryCreateValidationSchema = Joi.object({
     ...base,
 });
 
-const UpdateQuantityOfCartSchema = Joi.object({
-    quantity: Joi.number().min(0).max(100).required(),
-    id: Joi.string().required(),
-});
+
 
 export {
     ProductCreateValidationSchema,
     CategoryCreateValidationSchema,
-    UpdateQuantityOfCartSchema,
 }

@@ -1,6 +1,6 @@
 import { HTTP_STATUS } from "../config/constants.js";
 import { methodErrorHandler } from "../middlewares/errors/method.error.js";
-import { UpdateQuantityOfCartSchema } from "../middlewares/validation/product.validation.js";
+import { UpdateQuantityOfCartSchema } from "../middlewares/validation/extra.validation.js";
 import { Product } from "../models/product.model.js";
 import { errorMessage, errorMessageFormat } from "../utils/error.js";
 import { checkId } from "./product.controller.js";
